@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iNgntinhs CC Generator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070914;
+      --fg:#eaf0ff;
+      --muted:rgba(234,240,255,.62);
+      --line:rgba(255,255,255,.14);
+      --glass:rgba(255,255,255,.06);
+      --shadow:0 22px 70px rgba(0,0,0,.55);
+
+      --c1:#22d3ee; /* cyan */
+      --c2:#a78bfa; /* violet */
+      --c3:#34d399; /* green */
+      --r:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Roboto,system-ui,-apple-system,Segoe UI,sans-serif;
+      color:var(--fg);
+      background:
+        radial-gradient(900px 600px at 15% 20%, rgba(34,211,238,.18), transparent 60%),
+        radial-gradient(900px 600px at 80% 15%, rgba(167,139,250,.18), transparent 60%),
+        radial-gradient(900px 700px at 50% 110%, rgba(52,211,153,.10), transparent 60%),
+        linear-gradient(180deg, #050611, var(--bg));
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* tiny moving grid */
+    .gridfx{
+      pointer-events:none;
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.75), transparent 72%);
+      opacity:.45;
+      animation: drift 12s linear infinite;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(0,0,0); }
+      to{ transform: translate3d(-46px,-46px,0); }
+    }
+
+    .wrap{width:min(1100px,94vw);margin:0 auto;padding:22px 0 36px}
+
+    /* header */
+    .top{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;
+      border-radius:var(--r);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .mark{
+      width:40px;height:40px;border-radius:14px;
+      background:
+        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.45), transparent 60%),
+        linear-gradient(135deg, var(--c1), var(--c2));
+      position:relative;
+      box-shadow: 0 18px 55px rgba(34,211,238,.18);
+    }
+    .mark:after{
+      content:"";
+      position:absolute; inset:1px;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.25);
+    }
+    .bt{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+    .bt b{font-size:13px;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bt span{font-size:12px;color:var(--muted);margin-top:4px}
+
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 12px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.20);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .dot{
+      width:9px;height:9px;border-radius:50%;
+      background:var(--c3);
+      box-shadow:0 0 0 4px rgba(52,211,153,.16);
+    }
+
+    /* layout */
+    .grid{margin-top:16px;display:grid;grid-template-columns: 1fr 1.2fr;gap:16px}
+
+    /* ticket card */
+    .ticket{
+      position:relative;
+      border-radius: var(--r);
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow:hidden;
+    }
+    .ticket:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(240px 140px at 10% 0%, rgba(34,211,238,.18), transparent 60%),
+        radial-gradient(240px 140px at 90% 0%, rgba(167,139,250,.18), transparent 60%);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    /* punched edges */
+    .punch{
+      position:absolute; top:58px; bottom:18px; width:18px;
+      background:
+        radial-gradient(circle at 50% 12px, transparent 11px, rgba(0,0,0,.0) 12px),
+        radial-gradient(circle at 50% 44px, transparent 11px, rgba(0,0,0,.0) 12px);
+      filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+      opacity:.9;
+      pointer-events:none;
+    }
+    .punch.left{left:-9px}
+    .punch.right{right:-9px}
+
+    .head{
+      position:relative;
+      padding:14px 16px;
+      border-bottom:1px dashed rgba(255,255,255,.18);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .head b{
+      font-size:13px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+
+    .btn{
+      cursor:pointer;user-select:none;
+      border-radius:999px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--fg);
+      transition:.12s ease;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.24)}
+    .btn:active{transform:translateY(0)}
+    .btn.primary{
+      border:none;color:#041019;font-weight:700;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      box-shadow:
+        0 16px 50px rgba(34,211,238,.18),
+        0 0 0 6px rgba(34,211,238,.06);
+    }
+    .btn.danger{
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.22);
+      color:#fecaca;
+    }
+    .btn.ghost{background:transparent}
+
+    .body{position:relative;padding:16px}
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    input,select,textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      color:var(--fg);
+      outline:none;
+      transition:.12s ease;
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(34,211,238,.45);
+      box-shadow:0 0 0 5px rgba(34,211,238,.10);
+    }
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .status{margin-top:10px;font-size:12px;color:var(--muted);min-height:16px}
+
+    textarea{
+      min-height:320px;resize:vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:13px;line-height:1.5;
+      position:relative;
+    }
+
+    /* scanline effect on result */
+    .scanwrap{position:relative}
+    .scanwrap:after{
+      content:"";
+      position:absolute; inset:10px 10px 10px 10px;
+      pointer-events:none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.05) 0px,
+        rgba(255,255,255,.05) 1px,
+        transparent 2px,
+        transparent 6px
+      );
+      border-radius: 12px;
+      opacity:.25;
+      mask-image: linear-gradient(180deg, transparent, black 10%, black 90%, transparent);
+    }
+
+    footer{margin-top:16px;text-align:center;color:rgba(234,240,255,.45);font-size:12px}
+
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+      textarea{min-height:260px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gridfx"></div>
+
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="bt">
+          <b>iNgntinhs</b>
+          <span>CC Generator</span>
+        </div>
+      </div>
+      <div class="chip"><span class="dot"></span> dummy mode</div>
+    </div>
+
+    <section class="grid">
+      <!-- GENERATOR -->
+      <div class="ticket">
+        <div class="punch left"></div>
+        <div class="punch right"></div>
+
+        <div class="head">
+          <b>Generate</b>
+          <button class="btn ghost danger" id="clear" type="button">Clear</button>
+        </div>
+
+        <div class="body">
+          <label>Prefix</label>
+          <input id="bin" inputmode="numeric" placeholder="e.g. 999 / 123456">
+
+          <div class="row2">
+            <div>
+              <label>Month</label>
+              <select id="month"></select>
+            </div>
+            <div>
+              <label>Year</label>
+              <select id="year"></select>
+            </div>
+          </div>
+
+          <div class="row2">
+            <div>
+              <label>CVV</label>
+              <input id="cvv" inputmode="numeric" placeholder="blank = random">
+            </div>
+            <div>
+              <label>Qty</label>
+              <input id="qty" type="number" value="10" min="1" max="200">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="generate" type="button">Generate</button>
+            <button class="btn" id="download" type="button">Download</button>
+          </div>
+
+          <div class="status" id="status"></div>
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div class="ticket">
+        <div class="head">
+          <b>Result</b>
+          <div style="display:flex;gap:10px">
+            <button class="btn" id="copy" type="button">Copy</button>
+          </div>
+        </div>
+        <div class="body scanwrap">
+          <textarea id="result" readonly placeholder="output..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <footer>© 2026 iNgntinhs</footer>
+  </div>
+
+  <script>
+    // Month/Year
+    const monthSelect = document.getElementById("month");
+    const yearSelect  = document.getElementById("year");
+    const currentYear = new Date().getFullYear();
+
+    monthSelect.innerHTML = '<option value="random">Random</option>';
+    for (let i=1;i<=12;i++) monthSelect.innerHTML += `<option value="${i}">${String(i).padStart(2,"0")}</option>`;
+
+    yearSelect.innerHTML = '<option value="random">Random</option>';
+    for (let i=0;i<10;i++) yearSelect.innerHTML += `<option value="${currentYear+i}">${currentYear+i}</option>`;
+
+    // Dummy generator (NOT Luhn-valid)
+    const statusEl = document.getElementById("status");
+    const resultEl = document.getElementById("result");
+
+    const rand = (n)=>Math.floor(Math.random()*n);
+    const pad2 = (x)=>String(x).padStart(2,"0");
+
+    function fakeNumber(prefix){
+      let s = (prefix||"999").replace(/\D/g,"");
+      if(!s) s="999";
+      while(s.length<16) s += rand(10);
+      return s.slice(0,16);
+    }
+
+    document.getElementById("generate").addEventListener("click", ()=>{
+      const prefix = document.getElementById("bin").value;
+      const qty = Math.max(1, Math.min(200, Number(document.getElementById("qty").value || 10)));
+      const cvvInput = document.getElementById("cvv").value.replace(/\D/g,"").slice(0,4);
+
+      const list=[];
+      for(let i=0;i<qty;i++){
+        const num = fakeNumber(prefix);
+        const mm = monthSelect.value==="random" ? pad2(rand(12)+1) : pad2(monthSelect.value);
+        const yy = yearSelect.value==="random" ? String(currentYear+rand(10)) : String(yearSelect.value);
+        const cvv = cvvInput || String(rand(900)+100);
+        list.push(`${num}|${mm}|${yy}|${cvv}`);
+      }
+      resultEl.value = list.join("\n");
+      statusEl.textContent = `Generated: ${qty}`;
+    });
+
+    document.getElementById("copy").addEventListener("click", async ()=>{
+      const text = resultEl.value.trim();
+      if(!text){ statusEl.textContent="Nothing to copy"; return; }
+      await navigator.clipboard.writeText(text);
+      statusEl.textContent="Copied";
+    });
+
+    document.getElementById("clear").addEventListener("click", ()=>{
+      resultEl.value="";
+      statusEl.textContent="";
+    });
+
+    document.getElementById("download").addEventListener("click", ()=>{
+      const text = resultEl.value.trim();
+      if(!text){ statusEl.textContent="Nothing to download"; return; }
+      const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href=url;
+      a.download="ingntinhs_list.txt";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      statusEl.textContent="Downloaded";
+    });
+  </script>
+</body>
+</html>
